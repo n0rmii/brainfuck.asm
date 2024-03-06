@@ -1,5 +1,22 @@
 		global _start
 		section .text
+
+bf_read: ; ,
+		xor rax, rax
+		mov rdi, rax
+		mov rsi, r9
+		mov rdx, 1
+		syscall
+		ret
+
+bf_write: ; .
+		mov rax, 1
+		mov rdi, rax
+		mov rsi, r9
+		mov rdx, 1
+		syscall
+		ret
+
 _start:
 		mov rax, 1
 		mov rdi, rax
@@ -18,15 +35,15 @@ _start:
 		mov r10b, byte [r8]
 
 loop:
-		cmp r10b, 0
-		je exit		;if instruction 0, exit program
+		cmp r10b, 10
+		je exit		;if instruction 10 (newline), exit program
 
 		cmp r10b, "+"		;Im using an if-else ladder cuz asm switch-case is black magic
-		jne $+2		;if not +, else it
+		jne $+2
 		inc byte [r9]
 
 		cmp r10b, "-"
-		jne $+2		;if not -, else it
+		jne $+2
 		dec byte [r9]
 
 		cmp r10b, "<"
@@ -36,6 +53,14 @@ loop:
 		cmp r10b, ">"
 		jne $+2
 		inc r9
+
+		cmp r10b, ","
+		jne $+2
+		call bf_read
+
+		cmp r10b, "."
+		jne $+2
+		call bf_write
 
 		inc r8
 		mov r10b, byte [r8]
