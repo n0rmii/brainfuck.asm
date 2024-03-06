@@ -5,21 +5,22 @@ _start:
 		mov rdi, rax
 		mov rsi, meet
 		mov rdx, meetLen
-		syscall
+		syscall			;greetings
 
-		xor rax, rax	; 0 to rax
-		xor rdi, rdi	; 0 to rdi
-		mov rdx, 8
-		mov rsi, [hold]
-		add rsp, rdx	; make space for instruction (1 byte)
-		mov rsi, rsp	; address for instruction
-		syscall			; 1 byte read from stdin
+		xor rax, rax
+		xor rdi, rdi
+		mov rsi, instr
+		mov rdx, 128
+		syscall			;load instruction to buffer (max 128 bytes)
+
+		mov r8, instr	;r8 is now iptr
+		mov r9, array	;r9 is now dptr
+loop:
 		
-		mov rax, 1
-		mov rdi, rax
-		syscall
-
-		mov rax, 60
+		cmp r8, 0
+		jne loop		;if instruction not 0, loop back
+		
+		mov rax, 60		;sys_exit
 		syscall
 
 		section .rodata
@@ -27,4 +28,5 @@ meet: db "Hello! your input:", 10, 0
 meetLen: equ $-meet
 
 		section .bss
-hold: resb 8
+instr: resb 128
+array: resb 256
